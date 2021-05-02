@@ -1,6 +1,9 @@
 # HAProxy ve Keepalived (LoadBalancer+Cluster+Sec+HighLoads) Kurulum ve Yapılandırması
 
-![Crepe](hapkeep01.png)
+----
+![Crepe](ss/hapkeep01.png)
+
+----
 
 **HAProxy**, yüksek erişilebilirliğe(high availability) sahip yük dengeleyici(load balancing) ile **TCP** ve **HTTP** tabanlı uygulamalar için **proxy** sunucusu hizmeti veren açık kaynak kodlu bir yazılımdır.
 
@@ -362,6 +365,9 @@ Ayrıca güvenlik testlerini yapmanız için de aşağıdaki komuttan faydalanab
 sudo nmap -sV --script ssl-enum-ciphers -p 443 fatlan.com
 ~~~
 
+----
+![Crepe](ss/hapkeep02.png)
 
+----
 
 Ref : [https://medium.com/@pawilon/tuning-your-linux-kernel-and-haproxy-instance-for-high-loads-1a2105ea553e](https://medium.com/@pawilon/tuning-your-linux-kernel-and-haproxy-instance-for-high-loads-1a2105ea553e)
