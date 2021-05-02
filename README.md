@@ -369,5 +369,3 @@ sudo nmap -sV --script ssl-enum-ciphers -p 443 fatlan.com
 ![Crepe](ss/hapkeep02.png)
 
 ----
-
-Ref : [https://medium.com/@pawilon/tuning-your-linux-kernel-and-haproxy-instance-for-high-loads-1a2105ea553e](https://medium.com/@pawilon/tuning-your-linux-kernel-and-haproxy-instance-for-high-loads-1a2105ea553e)
