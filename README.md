@@ -80,10 +80,10 @@ global
         #  https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy
         ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
         #ssl-default-bind-options no-sslv3
-	    ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
-	    ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
-	    ssl-dh-param-file /etc/haproxy/dhparams.pem
-	    #tune.ssl.default-dh-param 2048
+	ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+	ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+	ssl-dh-param-file /etc/haproxy/dhparams.pem
+	#tune.ssl.default-dh-param 2048
 
 
 nbproc 1
@@ -136,8 +136,8 @@ frontend fatlan80
 frontend fatlan443
         bind fatlan.com:443 ssl crt /etc/ssl/private/haproxy.pem ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
         option httplog
-	    option forwardfor
- 	    #http-request set-header X-Client-IP req.hdr_ip([X-Forwarded-For])
+	option forwardfor
+ 	#http-request set-header X-Client-IP req.hdr_ip([X-Forwarded-For])
         #option forwardfor except 127.0.0.0/8
         option http-server-close
         reqadd X-Forwarded-Proto:\ https
@@ -149,13 +149,13 @@ ACL örnek yapilandirilmasi(proxypass) linkte herhangi biryerde **rest** kelimes
 ~~~
         acl keypanelfatlan443 path_beg /rest
         use_backend keypanelfatlan-backend443 if keypanelfatlan443
-        default_backend panelfatlan-backend
+        default_backend fatlan-backend
 ~~~
 
 ACL farklı **forum** host yönlendir
 ~~~
-    acl host_fatlanforum hdr(host) -i forum.fatlan.com
-    use_backend fatlanforum-backend if host_fatlanforum
+    	acl host_fatlanforum hdr(host) -i forum.fatlan.com
+    	use_backend fatlanforum-backend if host_fatlanforum
 ~~~
 
 Yönlendirilen kısım, **içerde sunucular 80 haberleştirildiği için 80 port yapılandırıldı**
