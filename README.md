@@ -365,6 +365,8 @@ Ayrıca güvenlik testlerini yapmanız için de aşağıdaki komuttan faydalanab
 sudo nmap -sV --script ssl-enum-ciphers -p 443 fatlan.com
 
 sudo nmap -p 443 --script ssl-cert fatlan.com
+
+openssl s_client -connect fatlan.com:443
 ~~~
 
 ----
