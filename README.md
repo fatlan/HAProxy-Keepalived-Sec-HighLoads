@@ -359,7 +359,7 @@ sudo systemctl restart haproxy.service
 
 ### Security
 
-Ayrıca Zayıf SSL/Kripto Kullanımı (LOGJAM) (CVE-2015-4000) güvenlik testlerini yapmanız için de aşağıdaki komuttan faydalanabilirsiniz ya da [https://www.ssllabs.com/ssltest/](https://www.ssllabs.com/ssltest/)
+Ayrıca zayıf SSL/Kripto Kullanımı (LOGJAM) (CVE-2015-4000) güvenlik testlerini yapmanız için de aşağıdaki komuttan faydalanabilirsiniz ya da [https://www.ssllabs.com/ssltest/](https://www.ssllabs.com/ssltest/)
 
 ~~~
 sudo nmap -sV --script ssl-enum-ciphers -p 443 fatlan.com
