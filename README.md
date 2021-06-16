@@ -110,7 +110,7 @@ defaults
         errorfile 504 /etc/haproxy/errors/504.http
 ~~~
 
-HAProxy için Dashboard yapılandırma kısmı
+HAProxy için Dashboard yapılandırma kısmı(monitoring için prometheus entegrasyonu eklendi)
 ~~~
 listen stats
         bind panel.fatlan.com:8989
@@ -359,7 +359,7 @@ sudo systemctl restart haproxy.service
 
 ### Security
 
-Ayrıca güvenlik testlerini yapmanız için de aşağıdaki komuttan faydalanabilirsiniz ya da [https://www.ssllabs.com/ssltest/](https://www.ssllabs.com/ssltest/)
+Ayrıca Zayıf SSL/Kripto Kullanımı (LOGJAM) (CVE-2015-4000) güvenlik testlerini yapmanız için de aşağıdaki komuttan faydalanabilirsiniz ya da [https://www.ssllabs.com/ssltest/](https://www.ssllabs.com/ssltest/)
 
 ~~~
 sudo nmap -sV --script ssl-enum-ciphers -p 443 fatlan.com
