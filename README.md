@@ -86,11 +86,11 @@ global
 	#tune.ssl.default-dh-param 2048
 
 
-nbproc 1
-nbthread 8
+	nbproc 1
+	nbthread 8
 
-tune.maxrewrite 16384
-tune.bufsize 32768
+	tune.maxrewrite 16384
+	tune.bufsize 32768
 
 defaults
         log     global
@@ -110,7 +110,7 @@ defaults
         errorfile 504 /etc/haproxy/errors/504.http
 ~~~
 
-HAProxy için Dashboard yapılandırma kısmı(monitoring için prometheus entegrasyonu eklendi)
+**HAProxy** için **Dashboard** yapılandırma kısmı(monitoring için **prometheus** entegrasyonu eklendi)
 ~~~
 listen stats
         bind panel.fatlan.com:8989
@@ -124,7 +124,7 @@ listen stats
         stats auth admin:admin
 ~~~
 
-Aşağıdaki yapılandırmada iki blog’ta **ACL** kullanıldı. İlk blog, **link**’in içinde herhangi bir yerde “**rest**” kelimesi geçerse **keypanelfatlan-backend443** bloğu çalışacak, ikincisinde farklı bir domain isteğinde(**forum.fatlan.com**) **backend fatlanforum-backend** çalışacak, haricinde tüm istekler **fatlan-backend** bloğunda çalışacak. Diğer port yönlendirmeleri hariç.
+Aşağıdaki yapılandırmada iki blog’ta **ACL** kullanıldı. İlk blog, **link**’in içinde herhangi bir yerde “**rest**” kelimesi geçerse **keypanelfatlan-backend** bloğu çalışacak, ikincisinde farklı bir domain isteğinde(**forum.fatlan.com**) **backend fatlanforum-backend** çalışacak, haricinde tüm istekler **fatlan-backend443** bloğunda çalışacak. Diğer port yönlendirmeleri hariç.
 
 **80 portunu 443 portuna** yönlendirme kısmı
 ~~~
@@ -142,14 +142,13 @@ frontend fatlan443
         option http-server-close
         reqadd X-Forwarded-Proto:\ https
         mode http
-
+        default_backend fatlan-backend443
 ~~~
 
 ACL örnek yapilandirilmasi(proxypass) linkte herhangi biryerde **rest** kelimesi geçerse yönlendir
 ~~~
-        acl keypanelfatlan443 path_beg /rest
-        use_backend keypanelfatlan-backend443 if keypanelfatlan443
-        default_backend fatlan-backend
+        acl keypanelfatlan path_beg /rest
+        use_backend keypanelfatlan-backend if keypanelfatlan
 ~~~
 
 ACL farklı **forum** host yönlendir
@@ -158,9 +157,9 @@ ACL farklı **forum** host yönlendir
     	use_backend fatlanforum-backend if host_fatlanforum
 ~~~
 
-Yönlendirilen kısım, **içerde sunucular 80 haberleştirildiği için 80 port yapılandırıldı**
+Default yönlendirilen kısım, **443** için yönlendirilen kısım
 ~~~
-backend fatlan-backend
+backend fatlan-backend443
         mode http
         balance roundrobin
         stick store-request src
@@ -168,13 +167,14 @@ backend fatlan-backend
         option forwardfor
         option httplog
         option httpchk HEAD /
-        server frontend_01 10.10.37.12:80 check port 80 inter 1000 rise 2 fall 3
-        server frontend_02 10.10.37.13:80 check port 80 inter 1000 rise 2 fall 3
+	
+        server frontend_01 10.10.37.12:8001 check port 8001 inter 3000 rise 2 fall 3
+        server frontend_02 10.10.37.13:8001 check port 8001 inter 3000 rise 2 fall 3
 ~~~
 
 ACL gelen, **rest** yönlendirilen kısım
 ~~~
-backend keypanelfatlan-backend443
+backend keypanelfatlan-backend
         mode http
         balance roundrobin
         stick store-request src
@@ -184,8 +184,9 @@ backend keypanelfatlan-backend443
         option httpchk OPTIONS /login HTTP/1.0
         http-check expect status 200
         reqrep ^([^\ :]*)\ /rest[/]?(.*) \1\ //\2
-        server restci_01 10.10.37.34:80 check inter 12000 rise 3 fall 3
-        server restci_02 10.10.37.35:80 check inter 12000 rise 3 fall 3
+	
+        server restci_01 10.10.37.34:3000 check port 4000 inter 12000 rise 3 fall 3
+        server restci_02 10.10.37.35:3000 check port 4000 inter 12000 rise 3 fall 3
 ~~~
 
 ACL gelen, **forum** yönlendirilen kısım
@@ -195,7 +196,8 @@ backend fatlanforum-backend
         option forwardfor
         option httplog
         option httpchk HEAD /
-        server fatlanforum_01 10.10.37.45:80 check port 80 inter 3000 rise 2 fall 3
+	
+        server fatlanforum_01 10.10.37.45:8080 check port 8080 inter 3000 rise 2 fall 3
 ~~~
 
 Harici örnekler aşağıdaki gibi de yapılandırılabilir.
@@ -213,7 +215,7 @@ frontend PanelStone5000
         default_backend panelstone-backend5000
 ~~~
 
-5000 portu yönlendirilen kısım
+**5000** portu yönlendirilen kısım
 ~~~
 backend panelstone-backend5000
         mode http
@@ -223,22 +225,24 @@ backend panelstone-backend5000
         option forwardfor
         option httplog
         option httpchk HEAD /
+	
         server ftstone_01 10.10.37.43:5000 check port 5000 inter 12000 rise 3 fall 3
         server ftstone_02 10.10.37.44:5000 check port 5000 inter 12000 rise 3 fall 3
 ~~~
 
 **3306 mysql örnek**;
 ~~~
-frontend FatlanMysql
+frontend fatlanmysql
         bind panel.fatlan.com:3306
         mode tcp
         default_backend fatlanmysql-backend3306
 ~~~
 
-3306 portu yönlendirilen kısım
+**3306** portu yönlendirilen kısım
 ~~~
 backend fatlanmysql-backend3306
         mode tcp
+	
         server mysql_01 10.10.37.60:3306 check
         server mysql_02 10.10.37.61:3306 check backup
         server mysql_03 10.10.37.62:3306 check backup
