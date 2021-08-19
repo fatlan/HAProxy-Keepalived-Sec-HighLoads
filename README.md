@@ -113,7 +113,7 @@ defaults
 **HAProxy** için **Dashboard** yapılandırma kısmı(monitoring için **prometheus** entegrasyonu eklendi)
 ~~~
 listen stats
-        bind panel.fatlan.com:8989
+        bind fatlan.com:8989
         mode http
         stats enable
         stats uri /stats
@@ -147,14 +147,14 @@ frontend fatlan443
 
 ACL örnek yapilandirilmasi(proxypass) linkte herhangi biryerde **rest** kelimesi geçerse yönlendir
 ~~~
-        acl keypanelfatlan path_beg /rest
-        use_backend keypanelfatlan-backend if keypanelfatlan
+        acl middleware-fatlan path_beg /rest
+        use_backend middleware-fatlan-backend if middleware-fatlan
 ~~~
 
 ACL farklı **forum** host yönlendir
 ~~~
     	acl host_fatlanforum hdr(host) -i forum.fatlan.com
-    	use_backend fatlanforum-backend if host_fatlanforum
+    	use_backend fatlan-forum-backend if host_fatlanforum
 ~~~
 
 Default yönlendirilen kısım, **443** için yönlendirilen kısım
@@ -174,7 +174,7 @@ backend fatlan-backend443
 
 ACL gelen, **rest** yönlendirilen kısım
 ~~~
-backend keypanelfatlan-backend
+backend middleware-fatlan-backend
         mode http
         balance roundrobin
         stick store-request src
@@ -185,19 +185,19 @@ backend keypanelfatlan-backend
         http-check expect status 200
         reqrep ^([^\ :]*)\ /rest[/]?(.*) \1\ //\2
 	
-        server restci_01 10.10.37.34:3000 check port 4000 inter 12000 rise 3 fall 3
-        server restci_02 10.10.37.35:3000 check port 4000 inter 12000 rise 3 fall 3
+        server middleware_01 10.10.37.34:3000 check port 4000 inter 12000 rise 3 fall 3
+        server middleware_02 10.10.37.35:3000 check port 4000 inter 12000 rise 3 fall 3
 ~~~
 
 ACL gelen, **forum** yönlendirilen kısım
 ~~~
-backend fatlanforum-backend
+backend fatlan-forum-backend
         mode http
         option forwardfor
         option httplog
         option httpchk HEAD /
 	
-        server fatlanforum_01 10.10.37.45:8080 check port 8080 inter 3000 rise 2 fall 3
+        server forum_01 10.10.37.45:8080 check port 8080 inter 3000 rise 2 fall 3
 ~~~
 
 Harici örnekler aşağıdaki gibi de yapılandırılabilir.
@@ -205,19 +205,19 @@ Harici örnekler aşağıdaki gibi de yapılandırılabilir.
 
 **5000 portuna örnek**;
 ~~~
-frontend PanelStone5000
-        bind panel.fatlan.com:5000
+frontend Panel5000
+        bind fatlan.com:5000
         option httplog
         option forwardfor except 127.0.0.0/8
         #option http-server-close
         reqadd X-Forwarded-Proto:\ https
         mode http
-        default_backend panelstone-backend5000
+        default_backend panel-backend5000
 ~~~
 
 **5000** portu yönlendirilen kısım
 ~~~
-backend panelstone-backend5000
+backend panel-backend5000
         mode http
         balance roundrobin
         stick store-request src
@@ -226,14 +226,14 @@ backend panelstone-backend5000
         option httplog
         option httpchk HEAD /
 	
-        server ftstone_01 10.10.37.43:5000 check port 5000 inter 12000 rise 3 fall 3
-        server ftstone_02 10.10.37.44:5000 check port 5000 inter 12000 rise 3 fall 3
+        server panel_01 10.10.37.43:5000 check port 5000 inter 12000 rise 3 fall 3
+        server panel_02 10.10.37.44:5000 check port 5000 inter 12000 rise 3 fall 3
 ~~~
 
 **3306 mysql örnek**;
 ~~~
 frontend fatlanmysql
-        bind panel.fatlan.com:3306
+        bind fatlan.com:3306
         mode tcp
         default_backend fatlanmysql-backend3306
 ~~~
@@ -246,6 +246,35 @@ backend fatlanmysql-backend3306
         server mysql_01 10.10.37.60:3306 check
         server mysql_02 10.10.37.61:3306 check backup
         server mysql_03 10.10.37.62:3306 check backup
+~~~
+
+Başka domain, subdomain ya da portlar için de yönlendirmeyi yine aynı haproxy üzerinden yapabilirsiniz. 
+
+**egitim.fatlan.com subdomain'i için 4444 portuna örnek**;
+~~~
+frontend egitim4444
+        bind egitim.fatlan.com:4444
+        option httplog
+        option forwardfor except 127.0.0.0/8
+        #option http-server-close
+        reqadd X-Forwarded-Proto:\ https
+        mode http
+        default_backend egitim-backend4444
+~~~
+
+**egitim.fatlan.com subdomain'i 4444** portu yönlendirilen kısım
+~~~
+backend egitim-backend4444
+        mode http
+        balance roundrobin
+        stick store-request src
+        stick-table type ip size 256k expire 30m
+        option forwardfor
+        option httplog
+        option httpchk HEAD /
+	
+        server egitim_01 10.10.37.77:4444 check port 4444 inter 12000 rise 3 fall 3
+        server egitim_02 10.10.37.78:4444 check port 4444 inter 12000 rise 3 fall 3
 ~~~
 
 Yukarıda örnek **HAProxy** yapılandırmalarından bahsettim, ben kendi yapılandırmamı yaptım ve **3 sunucuda aynı** yapılandırmaları yapıştırdım.
