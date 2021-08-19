@@ -124,7 +124,7 @@ listen stats
         stats auth admin:admin
 ~~~
 
-Aşağıdaki yapılandırmada iki blog’ta **ACL** kullanıldı. İlk blog, **link**’in içinde herhangi bir yerde “**rest**” kelimesi geçerse **keypanelfatlan-backend** bloğu çalışacak, ikincisinde farklı bir domain isteğinde(**forum.fatlan.com**) **backend fatlanforum-backend** çalışacak, haricinde tüm istekler **fatlan-backend443** bloğunda çalışacak. Diğer port yönlendirmeleri hariç.
+Aşağıdaki yapılandırmada iki blog’ta **ACL** kullanıldı. İlk blog, **link**’in içinde herhangi bir yerde “**rest**” kelimesi geçerse **middleware-fatlan-backend** bloğu çalışacak, ikincisinde farklı bir domain isteğinde(**forum.fatlan.com**) **backend fatlan-forum-backend** çalışacak, haricinde tüm istekler **fatlan-backend443** bloğunda çalışacak. Diğer port yönlendirmeleri hariç.
 
 **80 portunu 443 portuna** yönlendirme kısmı
 ~~~
@@ -248,7 +248,7 @@ backend fatlanmysql-backend3306
         server mysql_03 10.10.37.62:3306 check backup
 ~~~
 
-Başka domain, subdomain ya da portlar için de yönlendirmeyi yine aynı haproxy üzerinden yapabilirsiniz. 
+Başka domain, subdomain ya da portlar için de yönlendirmeyi yine aynı haproxy üzerinden yapabilirsiniz. Gerçi yukarıda subdomaain için ACL yönlendirmesini de görmüştük.
 
 **egitim.fatlan.com subdomain'i için 4444 portuna örnek**;
 ~~~
