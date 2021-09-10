@@ -23,9 +23,9 @@ Bunun için 4 adet IP kullanacağız(ip ler tamamen atmasyon)
 Şimdi her 3 sunucuya **HAProxy** ve **Keepalived** servisini aşağıdaki gibi kuralım.
 
 ~~~
-sudo add-apt-repository ppa:vbernat/haproxy-2.0
+sudo add-apt-repository ppa:vbernat/haproxy-2.4 -y
 sudo apt update
-sudo apt install haproxy keepalived
+sudo apt install haproxy keepalived -y
 sudo openssl dhparam -out /etc/haproxy/dhparams.pem 2048
 ~~~
 
