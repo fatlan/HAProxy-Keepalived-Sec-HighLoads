@@ -66,7 +66,7 @@ global
         user haproxy
         group haproxy
         daemon
-        maxconn 1000000
+        maxconn 100000
 
 
         # Default SSL material locations
