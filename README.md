@@ -282,6 +282,7 @@ Yukarıda örnek **HAProxy** yapılandırmalarından bahsettim, ben kendi yapıl
 ### Keepalived
 
 Şimdi **Keepalived** yapılandrımasını yapalım. **Keepalived** için **3 sunucuda** da **kısmi olarak farklı** parametrik ayarlar mecvut olacak. Bunun için “**/etc/keepalived/keepalived.conf**” dosyasını oluşturup, yapılandıracağız. Bu arada “**priority**” yüksek olan önceliklidir.
+
 **NoT1:** **Keepalived** diğer **peer**'leri ile arasında **multicast** haberleşir ve buna göre **master** **backup** belirlenir.
 
 **1. Sunucu(HAProxy+Keepalived)**
