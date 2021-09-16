@@ -283,7 +283,7 @@ Yukarıda örnek **HAProxy** yapılandırmalarından bahsettim, ben kendi yapıl
 
 Şimdi **Keepalived** yapılandrımasını yapalım. **Keepalived** için **3 sunucuda** da **kısmi olarak farklı** parametrik ayarlar mecvut olacak. Bunun için “**/etc/keepalived/keepalived.conf**” dosyasını oluşturup, yapılandıracağız. Bu arada “**priority**” yüksek olan önceliklidir.
 
-**NoT1:** **Keepalived** diğer **peer**'leri ile arasında **multicast** haberleşir ve buna göre **master** **backup** belirlenir.
+**NoT1:** **Keepalived** diğer **peer**'leri ile arasında **multicast** haberleşir ve bu yolla **master** **backup** belirlenir.
 
 **1. Sunucu(HAProxy+Keepalived)**
 ~~~
@@ -338,15 +338,15 @@ vrrp_instance VI_01 {
 
 **Unicast Config:** aşağıdaki gibi yapılandırmanın arasına eklenebilir.
 ~~~
-###Her sunucu için diğer eşneliği(peer) ip olarak belirtilmelidir
+###Her sunucu için diğer eşneliği(peer) ip olarak belirtilmelidir(yazılır)
 
 ...
 #Virtual interface
 ...
 
   unicast_peer {
-    <anaother_peer_ip>(10.10.5.14)
-    <anaother_peer_ip>(10.10.5.15)
+    <anaother_peer_ip>
+    <anaother_peer_ip>
   }
 
 # Virtual ip address – floating ip
