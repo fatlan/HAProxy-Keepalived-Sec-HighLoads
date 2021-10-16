@@ -285,6 +285,8 @@ Yukarıda örnek **HAProxy** yapılandırmalarından bahsettim, ben kendi yapıl
 
 **NoT1:** **Keepalived** diğer **peer**'leri ile arasında **multicast** haberleşir ve bu yolla **master** **backup** belirlenir.
 
+[https://www.redhat.com/sysadmin/keepalived-basics](https://www.redhat.com/sysadmin/keepalived-basics)
+
 **1. Sunucu(HAProxy+Keepalived)**
 ~~~
 vrrp_sync_group haproxy {
