@@ -1,9 +1,7 @@
 # HAProxy ve Keepalived (LoadBalancer+Cluster+Sec+HighLoads) Kurulum ve Yapılandırması
 
-----
 ![Crepe](ss/hapkeep01.png)
-
-----
+#
 
 **HAProxy**, yüksek erişilebilirliğe(high availability) sahip yük dengeleyici(load balancing) ile **TCP** ve **HTTP** tabanlı uygulamalar için **proxy** sunucusu hizmeti veren açık kaynak kodlu bir yazılımdır.
 
@@ -97,6 +95,7 @@ defaults
         mode    http
         option  httplog
         option  dontlognull
+	option forwardfor
         maxconn 1000000
         timeout connect 3000000
         timeout client  6000000
@@ -285,6 +284,8 @@ Yukarıda örnek **HAProxy** yapılandırmalarından bahsettim, ben kendi yapıl
 
 **NoT1:** **Keepalived** diğer **peer**'leri ile arasında **multicast** haberleşir ve bu yolla **master** **backup** belirlenir.
 
+**Tcpdump** ile de **peer**'lar arası **multicast** iletişimi **capture** edebilirsiniz(**tcpdump -n  "multicast"**).
+
 [https://www.redhat.com/sysadmin/keepalived-basics](https://www.redhat.com/sysadmin/keepalived-basics)
 
 **1. Sunucu(HAProxy+Keepalived)**
@@ -427,7 +428,11 @@ sudo nmap -p 443 --script ssl-cert fatlan.com
 openssl s_client -connect fatlan.com:443
 ~~~
 
-----
-![Crepe](ss/hapkeep02.png)
+Ayrıca yukarıdaki **config**'ler de **client ip** elde etmek için mevcut olan **x-forwarder-for**(**option forwardfor**) yapılandırmasının doğrulamasını, yani ip'leri **haproxy** tarafında **capture** edebilmek için **tcpdump** kullanabilirsiniz.
 
-----
+~~~
+sudo tcpdump -i ens3 -A -s 10240 | grep -v IP | egrep --line-buffered "..(GET |\.HTTP\/|POST |HEAD )|^[A-Za-z0-9-]+: " |sed -r 's/..(GET |HTTP\/|POST |HEAD )/\n\n\1/g'
+~~~
+
+# 
+![Crepe](ss/hapkeep02.png)
