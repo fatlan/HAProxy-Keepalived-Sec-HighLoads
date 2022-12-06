@@ -182,7 +182,7 @@ backend middleware-fatlan-backend
         option httplog
         option httpchk OPTIONS /login HTTP/1.0
         http-check expect status 200
-        reqrep ^([^\ :]*)\ /rest[/]?(.*) \1\ //\2
+        reqrep ^([^\ :]*)\ /rest[/]?(.*) \1\ //\2  #new version http-request replace-path /rest[/]?(.*) /\1
 	
         server middleware_01 10.10.37.34:3000 check port 4000 inter 12000 rise 3 fall 3
         server middleware_02 10.10.37.35:3000 check port 4000 inter 12000 rise 3 fall 3
@@ -297,8 +297,8 @@ vrrp_sync_group haproxy {
 }
 
 vrrp_script haproxy_check_script {
-  script “kill -0 `cat /var/run/haproxy.pid`”
-  interval 5 # checking every 5 seconds (default: 5 seconds)
+  script "killall -0 haproxy"
+  interval 2 # checking every 2 seconds (default: 5 seconds)
   fall 3 # require 3 failures for KO (default: 3)
   rise 6 # require 6 successes for OK (default: 6)
 }
@@ -309,16 +309,19 @@ vrrp_instance VI_01 {
   interface ens3
   ### 61 id'sini degistirin, diger peer'lerde de aynı olacak
   virtual_router_id 61
+  ### 103 id'sini degistirin, diger peer'lerde azalan şekilde olacak
   priority 103
-     authentication {
-         auth_type PASS
-         auth_pass 123456
-     }
+  
+  authentication {
+    auth_type PASS
+    auth_pass 123456
+  }
 
 # Virtual ip address – floating ip
   virtual_ipaddress {
     10.10.5.5
   }
+  
   track_script {
     haproxy_check_script
   }
