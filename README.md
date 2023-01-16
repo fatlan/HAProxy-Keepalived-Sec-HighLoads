@@ -182,7 +182,7 @@ backend middleware-fatlan-backend
         option httplog
         option httpchk OPTIONS /login HTTP/1.0
         http-check expect status 200
-        reqrep ^([^\ :]*)\ /rest[/]?(.*) \1\ //\2  #new version http-request replace-path /rest[/]?(.*) /\1
+        reqrep ^([^\ :]*)\ /rest[/]?(.*) \1\ //\2  #new_version http-request replace-path (.*)(?:rest\/)(.*) \1\2
 	
         server middleware_01 10.10.37.34:3000 check port 4000 inter 12000 rise 3 fall 3
         server middleware_02 10.10.37.35:3000 check port 4000 inter 12000 rise 3 fall 3
