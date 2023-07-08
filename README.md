@@ -21,7 +21,7 @@ Bunun için 4 adet IP kullanacağız(ip ler tamamen atmasyon)
 Şimdi her 3 sunucuya **HAProxy** ve **Keepalived** servisini aşağıdaki gibi kuralım.
 
 ~~~
-sudo add-apt-repository ppa:vbernat/haproxy-2.4 -y
+sudo add-apt-repository ppa:vbernat/haproxy-2.7 -y
 sudo apt update
 sudo apt install haproxy keepalived -y
 sudo openssl dhparam -out /etc/haproxy/dhparams.pem 2048
@@ -64,7 +64,7 @@ global
         user haproxy
         group haproxy
         daemon
-        maxconn 100000
+#        maxconn 100000 #replaceable
 
 
         # Default SSL material locations
@@ -84,8 +84,8 @@ global
 	#tune.ssl.default-dh-param 2048
 
 
-	nbproc 1
-	nbthread 8
+#	nbproc 1
+#	nbthread 8
 
 	tune.maxrewrite 16384
 	tune.bufsize 32768
@@ -96,7 +96,7 @@ defaults
         option  httplog
         option  dontlognull
 	option forwardfor
-        maxconn 1000000
+#        maxconn 1000000 #replaceable
         timeout connect 3000000
         timeout client  6000000
         timeout server  6000000
@@ -139,7 +139,8 @@ frontend fatlan443
  	#http-request set-header X-Client-IP req.hdr_ip([X-Forwarded-For])
         #option forwardfor except 127.0.0.0/8
         option http-server-close
-        reqadd X-Forwarded-Proto:\ https
+	http-request set-header X-Forwarded-Proto https
+#        reqadd X-Forwarded-Proto:\ https #old config
         mode http
         default_backend fatlan-backend443
 ~~~
@@ -164,7 +165,7 @@ backend fatlan-backend443
         stick store-request src
         stick-table type ip size 256k expire 30m
         option forwardfor
-        option httplog
+#        option httplog
         option httpchk HEAD /
 	
         server frontend_01 10.10.37.12:8001 check port 8001 inter 3000 rise 2 fall 3
@@ -179,10 +180,11 @@ backend middleware-fatlan-backend
         stick store-request src
         stick-table type ip size 256k expire 30m
         option forwardfor
-        option httplog
+#        option httplog
         option httpchk OPTIONS /login HTTP/1.0
         http-check expect status 200
-        reqrep ^([^\ :]*)\ /rest[/]?(.*) \1\ //\2  #new_version http-request replace-path (.*)(?:rest\/)(.*) \1\2
+	http-request replace-path (.*)(?:rest\/)(.*) \1\2
+#        reqrep ^([^\ :]*)\ /rest[/]?(.*) \1\ //\2  #old config 
 	
         server middleware_01 10.10.37.34:3000 check port 4000 inter 12000 rise 3 fall 3
         server middleware_02 10.10.37.35:3000 check port 4000 inter 12000 rise 3 fall 3
@@ -193,7 +195,7 @@ ACL gelen, **forum** yönlendirilen kısım
 backend fatlan-forum-backend
         mode http
         option forwardfor
-        option httplog
+#        option httplog
         option httpchk HEAD /
 	
         server forum_01 10.10.37.45:8080 check port 8080 inter 3000 rise 2 fall 3
@@ -206,10 +208,11 @@ Harici örnekler aşağıdaki gibi de yapılandırılabilir.
 ~~~
 frontend Panel5000
         bind fatlan.com:5000
-        option httplog
+#        option httplog
         option forwardfor except 127.0.0.0/8
         #option http-server-close
-        reqadd X-Forwarded-Proto:\ https
+	http-request set-header X-Forwarded-Proto https
+#        reqadd X-Forwarded-Proto:\ https #old config
         mode http
         default_backend panel-backend5000
 ~~~
@@ -222,7 +225,7 @@ backend panel-backend5000
         stick store-request src
         stick-table type ip size 256k expire 30m
         option forwardfor
-        option httplog
+#        option httplog
         option httpchk HEAD /
 	
         server panel_01 10.10.37.43:5000 check port 5000 inter 12000 rise 3 fall 3
@@ -253,10 +256,11 @@ Başka domain, subdomain ya da portlar için de yönlendirmeyi yine aynı haprox
 ~~~
 frontend egitim4444
         bind egitim.fatlan.com:4444
-        option httplog
+#        option httplog
         option forwardfor except 127.0.0.0/8
         #option http-server-close
-        reqadd X-Forwarded-Proto:\ https
+	http-request set-header X-Forwarded-Proto https
+#        reqadd X-Forwarded-Proto:\ https #old config
         mode http
         default_backend egitim-backend4444
 ~~~
@@ -269,7 +273,7 @@ backend egitim-backend4444
         stick store-request src
         stick-table type ip size 256k expire 30m
         option forwardfor
-        option httplog
+#        option httplog
         option httpchk HEAD /
 	
         server egitim_01 10.10.37.77:4444 check port 4444 inter 12000 rise 3 fall 3
